@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import Todo from './Todo';
-import { newTodo } from '../actions';
+import { newTodo, completer, clearCompleted } from '../actions';
 
 class TodoContainer extends Component {
     state = {
-        newTodoText: ''
+        newTodoValue: ''
     }
 
     handleChanges = e => {
@@ -17,28 +17,46 @@ class TodoContainer extends Component {
     addTodo = e => {
         e.preventDefault();
         const todo = {
-            value: this.state.newTodoText,
+            value: this.state.newTodoValue,
             completed: false
         }
         this.props.newTodo(todo);
+        this.setState({
+            newTodoValue: ''
+        })
+    }
+
+    completer = todo => {
+        this.props.completer(todo)
+    }
+
+    clearCompleted = e => {
+        this.props.clearCompleted(e);
     }
 
     render() {
         return (
             <div className='TodoContainer'>
+                <h1>Todos</h1>
                 {this.props.todos.map((todo, id) => (
-                    <Todo todo={todo} key={id} />
+                    <Todo
+                        todo={todo}
+                        key={id}
+                        completer={this.completer}
+                    />
                 ))}
                 <form
                     className='addTodo'
                     onSubmit={this.addTodo}
                 >
                     <input
-                        name='newTodoText'
-                        value={this.state.newTodoText}
+                        name='newTodoValue'
+                        value={this.state.newTodoValue}
                         onChange={this.handleChanges}
                     />
+                    <button>Add</button>
                 </form>
+                <button onClick={this.clearCompleted}>Clear</button>
             </div>
         )
     }
@@ -50,4 +68,4 @@ const mapStateToProps = state => {
     }
 }
 
-export default connect(mapStateToProps, { newTodo })(TodoContainer);
+export default connect(mapStateToProps, { newTodo, completer, clearCompleted })(TodoContainer);
